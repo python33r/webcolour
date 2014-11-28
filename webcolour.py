@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Nick Efford <nick.efford (at) gmail.com>
+# Copyright (c) 2012-14 Nick Efford <nick.efford (at) gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@
 
 
 __author__  = 'Nick Efford'
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 import re
@@ -40,13 +40,13 @@ import re
 
 COLOUR_PATTERN = re.compile('([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})')
 
-# WCAG 2.0 thresholds
+# WCAG 2.0 thresholds for regular and large text
 # (www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html)
 
-WCAG_THRESHOLDS = {
-    False : { 'AA' : 4.5, 'AAA' : 7.0 },   # regular text
-    True  : { 'AA' : 3.0, 'AAA' : 4.5 }    # large text
-}
+WCAG_REGULAR = { 'AA': 4.5, 'AAA': 7.0 }
+WCAG_LARGE   = { 'AA': 3.0, 'AAA': 4.5 }
+
+LEVELS = WCAG_REGULAR.keys()
 
 
 def parse_colour(colour):
@@ -118,7 +118,13 @@ def conforms(contrast, level='AA', large=False):
        assumed; the test can be done for large text by calling the
        function with 'large=True' as an argument.
     """
-    return contrast >= WCAG_THRESHOLDS[large][level]
+    if level not in LEVELS:
+        raise ValueError("Level must be 'AA' or 'AAA'")
+
+    if large:
+        return contrast >= WCAG_LARGE[level]
+    else:
+        return contrast >= WCAG_REGULAR[level]
 
 
 def wcag_level(contrast, large=False):
@@ -128,9 +134,14 @@ def wcag_level(contrast, large=False):
        Normal text is assumed by default; large text can be specified
        by supplying 'large=True' as an argument.
     """
-    if contrast >= WCAG_THRESHOLDS[large]['AAA']:
+    if large:
+        thresh = WCAG_LARGE
+    else:
+        thresh = WCAG_REGULAR
+
+    if contrast >= thresh['AAA']:
         return 'AAA'
-    elif contrast >= WCAG_THRESHOLDS[large]['AA']:
+    elif contrast >= thresh['AA']:
         return 'AA'
     else:
         return ''

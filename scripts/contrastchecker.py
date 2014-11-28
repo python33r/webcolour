@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2012 Nick Efford <nick.efford (at) gmail.com>
+# Copyright (c) 2012-14 Nick Efford <nick.efford (at) gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
